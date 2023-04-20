@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "types": ["node"]
+  },
+  "include": ["./src", "./test"],
+  "files": ["dual-consumer.ts", "full-synchronization.ts", "test-connection.js", "shared-legacy-consumer.js", "shared-modern-consumer.js"]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "bisync",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dual-consumer.ts",
+    "test:bdd": "cucumber-js --require-module ts-node/register --require 'src/step-definitions/**/*.js'",
+    "test:jest": "jest",
+    "test": "npm run test:bdd && npm run test:jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "dotenv": "^16.0.3",
+    "kafkajs": "^2.2.4",
+    "mssql": "^9.1.1",
+    "redis": "^4.6.5"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^9.0.0",
+    "@types/chai": "^4.3.4",
+    "@types/node": "^18.15.12",
+    "chai": "^4.3.7",
+    "cucumber-tsflow": "^4.0.0-rc.7",
+    "jest": "^29.5.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
+}

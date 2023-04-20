@@ -1,0 +1,6 @@
+.idea
+node_modules
+.env
+.env.prod
+.register-sqlserver-new.json
+.register-sqlserver.json

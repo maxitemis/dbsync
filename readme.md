@@ -1,7 +1,29 @@
 # Prototype of Bidirectional Synchronization
 
 
-## Using SQL Server
+## Reacting to change events from CDC Queue
+
+````mermaid
+flowchart TD
+    a(DML Event in modernided DB) --> b
+    b{What kind event it is?} -- update event --> c1
+    c1{stored hash changed?} -- yes --> c11
+    c1 -- no -- this is a mirroring event --> exit
+    c11[update legacy entry] --> c12
+    c12[store the new hashes in the mapping table] --> exit
+    b -- create event --> c2
+    c2{mapping exists?} -- yes --> exit
+    c2 -- no --> c22
+    c22[save new record in legacy db] --> c23
+    c23[store the mapping in the mapping table]
+    c23 --> exit
+    b -- delete event --> c3
+    c3{mapping exists?} -- no --> exit
+    c3 -- yes --> c31
+    c31[delete entry from legacy database] --> c32
+    c32[delete mapping] --> exit
+    exit
+````
 
 
 ## Manual Test 
@@ -26,7 +48,7 @@ docker-compose exec sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_
 
 ## Mac M1
 
-Example was teste on Mac M1 with the latest Docker version and activated amd64 emulation.
+Example was tested on Mac M1 with the latest Docker version and activated rosetta emulation in Docker.
 
 ## Tests
 
@@ -36,10 +58,6 @@ docker-compose exec node npm test
 
 ### ID Mapping Table
 
-Create a full mapping script
-
-- delete all customers
-- run a script and populate modern database together with mapping table
 
 ````shell
 # Initialize database and insert test data
@@ -50,10 +68,10 @@ docker-compose up -d
 cat debezium-sqlserver-init/legacy-inventory.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
 cat debezium-sqlserver-init/modern-inventory.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
 
+docker-compose exec node node full-synchronization.js
+
 cat debezium-sqlserver-init/legacy-inventory-cdc.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
 cat debezium-sqlserver-init/modern-inventory-cdc.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
-
-docker-compose exec node node full-synchronization.js
 
 curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ -d @register-sqlserver.json
 curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ -d @register-sqlserver-new.json
@@ -66,6 +84,21 @@ docker-compose exec node node dual-consumer.js
 # Modify records in the database via SQL Server client (do not forget to add `GO` command to execute the statement)
 docker-compose exec sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD -d testDB'
 docker-compose exec sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD -d newDB'
+
+-- job anpassen
+EXECUTE sys.sp_cdc_change_job
+        @job_type = N'capture',
+        @pollinginterval = 1,
+        @continuous = 1;
+
+-- job neustarten
+EXECUTE sys.sp_cdc_stop_job @job_type = 'capture'
+EXECUTE sys.sp_cdc_start_job @job_type = 'capture'
+
+-- jobs überprüfen
+EXECUTE sys.sp_cdc_help_jobs
+
+
 
 docker-compose exec node npm test 
 

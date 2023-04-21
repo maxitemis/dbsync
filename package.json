@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dual-consumer.ts",
-    "test:bdd": "cucumber-js --require-module ts-node/register --require 'src/step-definitions/**/*.js'",
+    "test:bdd": "cucumber-js --require 'src/step-definitions/**/*.js'",
     "test:jest": "jest",
     "test": "npm run test:bdd && npm run test:jest"
   },

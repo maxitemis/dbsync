@@ -1,4 +1,4 @@
-Feature: Synchronisation
+Feature: Bidirectional Synchronisation
 
   Scenario: Legacy Data Changes Causing Changes on Remote Server
     When name in legacy database changed

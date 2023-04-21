@@ -4,11 +4,7 @@ const {openLegacyConnection, openModernConnection, tablePrefix} = require("../co
 const LegacyCustomersRepository = require("../repository/legacy-customers-repository");
 const ModernCustomersRepository = require("../repository/modern-customers-repository");
 
-const GeneralRepository = require("../repository/general-repository");
-
 const {makeDelay, waitValueForChange, waitUntilSuccess, waitUntilFails} = require("../helpers/feature-helpers");
-const LegacyAddressModel = require("../model/legacy/addresses");
-const ModernAddressModel = require("../model/modern/addresses");
 const sql = require("mssql");
 
 setDefaultTimeout(60 * 1000);
@@ -22,8 +18,6 @@ this.modernDbConnection = undefined;
 this.legacyDbConnection = undefined;
 this.modernCustomersRepository = undefined;
 this.legacyCustomersRepository = undefined;
-this.generalLegacyRepository = undefined;
-this.generalModernRepository = undefined;
 
 
 When('name in legacy database changed', async () => {
@@ -137,53 +131,6 @@ Then('The same records is deleted from legacy database', async () => {
     assert.deepEqual(record, null);
 });
 
-Given(/^the entry in the legacy is locked$/, async () => {
-    const suffix = Date.now();
-    const street = this.oldStreet = 'street' + suffix;
-    const values = {street}
-    const id = await this.generalLegacyRepository.insert(LegacyAddressModel, { Strasse: street });
-
-    this.modernAddress = await waitUntilSuccess(async () => {
-        const list = await this.generalModernRepository.findEntry(ModernAddressModel, { street });
-        if (list.length === 0) {
-            throw new Error('too early');
-        }
-        return list[0];
-    }, WAITING_TIME);
-
-    const request = new sql.Request(this.legacyDbConnection.pool);
-    request.input('Tablename', sql.VarChar, 'AD');
-    request.input('Primkey', sql.Int, id);
-    await request.query(
-        `INSERT INTO gLock (Tablename, Primkey, Datum, Form) VALUES (@Tablename, @Primkey, GETDATE(), 'test')`
-    );
-});
-
-
-When(/^modern record is changed$/, async () => {
-    const suffix = Date.now();
-    const street = this.newStreet = 'newstreet' + suffix;
-    await this.generalModernRepository.update(ModernAddressModel, this.modernAddress.id, { street });
-
-
-});
-
-Then(/^legacy entry will not be changed$/, async () => {
-
-});
-
-Then(/^modern entry will be reverted$/, async () => {
-    const result = await waitUntilSuccess(async () => {
-        const list = await this.generalModernRepository.findEntry(ModernAddressModel, { street: this.oldStreet });
-        if (list.length === 0) {
-            throw new Error('too early');
-        }
-        return list[0];
-    }, WAITING_TIME);
-
-    console.log("test", result);
-});
-
 
 BeforeAll(async () => {
 
@@ -192,9 +139,6 @@ BeforeAll(async () => {
 
     this.legacyCustomersRepository = new LegacyCustomersRepository(this.legacyDbConnection.pool, tablePrefix);
     this.modernCustomersRepository = new ModernCustomersRepository(this.modernDbConnection.pool, tablePrefix);
-
-    this.generalLegacyRepository = new GeneralRepository(this.legacyDbConnection.pool, tablePrefix);
-    this.generalModernRepository = new GeneralRepository(this.modernDbConnection.pool, tablePrefix);
 
     await this.legacyCustomersRepository.prepareStatements();
     await this.modernCustomersRepository.prepareStatements();

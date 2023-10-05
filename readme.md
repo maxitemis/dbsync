@@ -78,7 +78,8 @@ curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json"
 
 curl -i -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/
 
-docker-compose exec node node dual-consumer.js 
+docker-compose exec node node legacy-modern-consumer.js 
+docker-compose exec node node modern-legacy-consumer.js
 
 
 # Modify records in the database via SQL Server client (do not forget to add `GO` command to execute the statement)

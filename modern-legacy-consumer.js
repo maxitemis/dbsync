@@ -1,7 +1,7 @@
 const dotenv = require('dotenv')
 dotenv.config();
 
-const DualConsumer = require('./src/dual-consumer');
+const DualConsumer = require('./src/modern-legacy');
 
 const signalTraps = ['SIGTERM', 'SIGINT', 'SIGUSR2']
 

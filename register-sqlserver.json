@@ -8,14 +8,14 @@
     "database.port" : "1433",
     "database.user" : "sa",
     "database.password" : "Password!",
-    "database.names" : "testDB",
+    "database.names" : "legacyDB",
     "schema.history.internal.kafka.bootstrap.servers" : "kafka:9092",
     "schema.history.internal.kafka.topic": "schema-changes.inventory",
     "database.encrypt": "false",
     "provide.transaction.metadata": "true",
     "transforms":"Reroute",
     "transforms.Reroute.type": "io.debezium.transforms.ByLogicalTableRouter",
-    "transforms.Reroute.topic.regex": "(server1\\.testDB\\.dbo)\\.(.*)",
+    "transforms.Reroute.topic.regex": "(server1\\.legacyDB\\.dbo)\\.(.*)",
     "transforms.Reroute.topic.replacement": "$1\\.legacy_changes"
   }
 }

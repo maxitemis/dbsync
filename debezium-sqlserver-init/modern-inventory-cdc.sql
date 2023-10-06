@@ -1,4 +1,4 @@
-USE newDB;
+USE modernDB;
 
 EXEC sys.sp_cdc_enable_db;
 

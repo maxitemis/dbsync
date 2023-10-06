@@ -1,8 +1,8 @@
 -- Create the test database
-CREATE DATABASE testDB;
+CREATE DATABASE legacyDB;
 GO
 
-USE testDB;
+USE legacyDB;
 
 -- Create and populate our products using a single insert with many rows
 CREATE TABLE legacy_products (

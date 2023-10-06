@@ -1,8 +1,8 @@
 -- Create the test database
-CREATE DATABASE newDB;
+CREATE DATABASE modernDB;
 GO
 
-USE newDB
+USE modernDB
 
 -- Create and populate our products using a single insert with many rows
 CREATE TABLE modern_products (

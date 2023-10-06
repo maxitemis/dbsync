@@ -31,7 +31,7 @@ flowchart TD
 ```shell
 
 # Modify records in the database via SQL Server client (do not forget to add `GO` command to execute the statement)
-docker-compose exec sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD -d testDB'
+docker-compose exec sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD -d legacyDB'
 
 # INSERT INTO customers(first_name,last_name,email) VALUES ('Roger','Poor','roger1@poor.com');
 # UPDATE customers set first_name = 'Barry' where id = 1005;
@@ -42,7 +42,7 @@ docker-compose exec sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_
 # run consumerLegacy
 docker-compose exec node node /usr/src/app/shared-legacy-consumerLegacy.js
 
-docker-compose exec sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD -d testDB'
+docker-compose exec sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD -d legacyDB'
 
 ```
 
@@ -83,8 +83,8 @@ docker-compose exec node node modern-legacy-consumer.js
 
 
 # Modify records in the database via SQL Server client (do not forget to add `GO` command to execute the statement)
-docker-compose exec sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD -d testDB'
-docker-compose exec sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD -d newDB'
+docker-compose exec sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD -d legacyDB'
+docker-compose exec sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD -d modernDB'
 
 -- job anpassen
 EXECUTE sys.sp_cdc_change_job

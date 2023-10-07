@@ -66,7 +66,8 @@ export DEBEZIUM_VERSION=2.0
 docker-compose up -d
 
 cat debezium-sqlserver-init/legacy-inventory.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
-cat debezium-sqlserver-init/modern-inventory.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
+
+cat debezium-sqlserver-init/modern-inventory.sql | docker-compose exec -T postgres bash -c 'psql -U postgres'
 
 docker-compose exec node node full-synchronization.js
 

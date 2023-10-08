@@ -25,8 +25,25 @@ flowchart TD
     exit
 ````
 
+## Testing
 
-## Manual Test 
+### Unit Tests
+
+unit tests can be called locally:
+
+`npm run test:unit`
+
+or from docker container
+
+`docker-compose exec node npm run test:unit`
+
+### Integration Tests
+
+since application is using real database it should be stared in docker
+
+`docker-compose exec node npm run test:bdd`
+
+### Manual Test 
 
 ```shell
 
@@ -66,6 +83,7 @@ export DEBEZIUM_VERSION=2.0
 docker-compose up -d
 
 cat debezium-sqlserver-init/legacy-inventory.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
+cat debezium-sqlserver-init/modern-inventory-mssql.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
 
 cat debezium-sqlserver-init/modern-inventory.sql | docker-compose exec -T postgres bash -c 'psql -U postgres'
 cat debezium-sqlserver-init/synchronization.sql | docker-compose exec -T postgres bash -c 'psql -U postgres'

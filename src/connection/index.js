@@ -65,4 +65,24 @@ const openModernPostgresConnection = async function() {
     return modernDbConnection;
 }
 
-module.exports = { openModernConnection, openLegacyConnection, tablePrefix, openModernPostgresConnection }
+const openSynchronizationPostgresConnection = async function() {
+    const modernDbConnection = new PgConnection();
+    await modernDbConnection.open({
+        host: process.env.SYNC_POSTGRES_SERVER,
+        port: 5432,
+        database: process.env.SYNC_POSTGRES_DATABASE,
+        user: process.env.SYNC_POSTGRES_USERNAME,
+        password: process.env.SYNC_POSTGRES_PASSWORD,
+    });
+    return modernDbConnection;
+}
+
+
+
+module.exports = {
+    openModernConnection,
+    openLegacyConnection,
+    tablePrefix,
+    openModernPostgresConnection,
+    openSynchronizationPostgresConnection
+}

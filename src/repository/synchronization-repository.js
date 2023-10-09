@@ -51,16 +51,16 @@ class SynchronizationRepository {
         this.psGetMappingByLegacyId = new sql.PreparedStatement(this.pool);
         this.psGetMappingByLegacyId.input('id', sql.VarChar);
         this.psGetMappingByLegacyId.input('objectName', sql.VarChar);
-        await this.psGetMappingByLegacyId.prepare(`select * from ${this.tablePrefix}synchronization where legacy_keys = @id AND object_name = @objectName`)
+        await this.psGetMappingByLegacyId.prepare(`SELECT * from ${this.tablePrefix}synchronization where legacy_keys = @id AND object_name = @objectName`)
 
         this.psDelete = new sql.PreparedStatement(this.pool);
         this.psDelete.input('id', sql.Int);
-        await this.psDelete.prepare(`delete from ${this.tablePrefix}synchronization where id = @id`)
+        await this.psDelete.prepare(`DELETE from ${this.tablePrefix}synchronization where id = @id`)
 
         this.psGetMappingByModernId = new sql.PreparedStatement(this.pool);
         this.psGetMappingByModernId.input('id', sql.VarChar);
         this.psGetMappingByModernId.input('objectName', sql.VarChar);
-        await this.psGetMappingByModernId.prepare(`select * from ${this.tablePrefix}synchronization where modern_keys = @id AND object_name = @objectName`)
+        await this.psGetMappingByModernId.prepare(`SELECT * from ${this.tablePrefix}synchronization where modern_keys = @id AND object_name = @objectName`)
 
         this.psUpdateHashForEntry = new sql.PreparedStatement(this.pool);
         this.psUpdateHashForEntry.input('id', sql.Int);

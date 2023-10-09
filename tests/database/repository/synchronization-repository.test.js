@@ -1,6 +1,12 @@
-//
+const Repository = require("../../../src/repository/synchronization-repository");
+const {openModernConnection} = require("../../../src/connection");
+const testFunctions = require("./repository-cases");
 
-const synchronization = require("../../../src/model/synchronisation");
-test('get tables mapped by modern name', () => {
-    expect(true).toEqual(true);
+test('check mssql synchronization repo', async () => {
+    const modernConnection = await openModernConnection();
+    const repo = new Repository(modernConnection.pool, "");
+    await repo.prepareStatements();
+    await testFunctions(repo);
+    await repo.unprepareStatements();
+    await modernConnection.close()
 });

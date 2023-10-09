@@ -1,12 +1,12 @@
 const dotenv = require('dotenv')
 const {Kafka} = require("kafkajs");
-const SynchronizationRepository = require("./repository/synchronization-repository");
+const SynchronizationRepository = require("./repository/synchronization-repository-pg");
 
 const GeneralRepository = require("./repository/general-repository");
 
 const calculateHash = require("./helpers/hash-calculator");
 const synchronisation = require("./model/synchronisation");
-const {openLegacyConnection, openModernConnection, tablePrefix} = require("./connection");
+const {openLegacyConnection, openModernConnection, tablePrefix, openSynchronizationPostgresConnection} = require("./connection");
 dotenv.config();
 
 const synchronizationByModernName = synchronisation.getTablesByModernName(tablePrefix);
@@ -135,6 +135,7 @@ class DualConsumer {
 
         this.legacyConnection = await openLegacyConnection();
         this.modernConnection = await openModernConnection();
+        this.syncConnection = await openSynchronizationPostgresConnection();
 
         // the client ID lets kafka know who's producing the messages
 
@@ -145,8 +146,7 @@ class DualConsumer {
 
         this.consumerLegacy = kafka.consumer({ groupId: clientId });
 
-        this.synchronizationRepository = new SynchronizationRepository(this.modernConnection.pool, tablePrefix);
-        await this.synchronizationRepository.prepareStatements();
+        this.synchronizationRepository = new SynchronizationRepository(this.syncConnection.client, tablePrefix);
 
         this.legacyRepository = new GeneralRepository(this.legacyConnection.pool, tablePrefix);
         //this.modernRepository = new GeneralRepository(this.modernConnection.pool, tablePrefix);
@@ -185,10 +185,9 @@ class DualConsumer {
 
     async stop() {
         await this.consumerLegacy.disconnect();
-        await this.synchronizationRepository.unprepareStatements();
-
         await this.legacyConnection.close();
         await this.modernConnection.close();
+        await this.syncConnection.close();
     }
 
     async insertSynchronizationLock(afterElement, modernID, legacyHash, modernHash, objectName) {

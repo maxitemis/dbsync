@@ -88,7 +88,7 @@ cat debezium-sqlserver-init/modern-inventory-mssql.sql | docker-compose exec -T 
 cat debezium-sqlserver-init/modern-inventory.sql | docker-compose exec -T postgres bash -c 'psql -U postgres'
 cat debezium-sqlserver-init/synchronization.sql | docker-compose exec -T postgres bash -c 'psql -U postgres'
 
-docker-compose exec node node full-synchronization.js
+docker-compose exec node node full-synchronization-pg.js
 
 cat debezium-sqlserver-init/legacy-inventory-cdc.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
 cat debezium-sqlserver-init/modern-inventory-cdc.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
@@ -98,8 +98,8 @@ curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json"
 
 curl -i -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/
 
-docker-compose exec node node legacy-modern-consumer.js 
-docker-compose exec node node modern-legacy-consumer.js
+docker-compose exec node node legacy-modern-pg-consumer.js 
+docker-compose exec node node modern-legacy-pg-consumer.js
 
 
 # Modify records in the database via SQL Server client (do not forget to add `GO` command to execute the statement)

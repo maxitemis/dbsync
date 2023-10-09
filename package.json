@@ -27,6 +27,7 @@
     "start": "node dual-consumer.ts",
     "test:bdd": "cucumber-js --require 'src/step-definitions/**/*.js'",
     "test:jest": "jest",
+    "test:db": "jest --config=jest.db.config.js",
     "test:unit": "jest",
     "test": "npm run test:bdd && npm run test:jest"
   }

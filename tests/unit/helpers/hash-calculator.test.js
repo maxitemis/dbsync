@@ -1,4 +1,4 @@
-const calculateHash = module.require('../../src/helpers/hash-calculator');
+const calculateHash = module.require('../../../src/helpers/hash-calculator');
 
 test('expect hash calculator to return expected result', () => {
     const result = calculateHash(["value1", "value2", "value3"]);

@@ -1,4 +1,4 @@
-const synchronization = require("../../src/model/synchronisation");
+const synchronization = require("../../../src/model/synchronisation");
 
 test('get tables mapped by name', () => {
     expect(Object.keys(synchronization.getTablesByName(''))).toEqual(['customers', 'products', 'orders']);

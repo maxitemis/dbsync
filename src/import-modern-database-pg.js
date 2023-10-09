@@ -1,5 +1,5 @@
-const GeneralRepository = require("./repository/general-repository");
-const SynchronizationRepository = require("./repository/synchronization-repository-pg");
+const GeneralRepository = require("./repository/mssql/general-repository");
+const SynchronizationRepository = require("./repository/pg/synchronization-repository");
 const calculateHash = require("./helpers/hash-calculator");
 const synchronization = require("./model/synchronisation");
 

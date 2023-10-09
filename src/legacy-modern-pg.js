@@ -1,8 +1,8 @@
 const dotenv = require('dotenv')
 const {Kafka} = require("kafkajs");
-const SynchronizationRepository = require("./repository/synchronization-repository-pg");
+const SynchronizationRepository = require("./repository/pg/synchronization-repository");
 
-const GeneralRepository = require("./repository/general-repository");
+const GeneralRepository = require("./repository/mssql/general-repository");
 
 const calculateHash = require("./helpers/hash-calculator");
 const synchronisation = require("./model/synchronisation");

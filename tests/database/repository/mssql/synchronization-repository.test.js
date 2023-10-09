@@ -1,6 +1,6 @@
-const Repository = require("../../../src/repository/synchronization-repository");
-const {openModernConnection} = require("../../../src/connection");
-const testFunctions = require("./repository-cases");
+const Repository = require("../../../../src/repository/mssql/synchronization-repository");
+const {openModernConnection} = require("../../../../src/connection");
+const testFunctions = require("../repository-cases");
 
 test('check mssql synchronization repo', async () => {
     const modernConnection = await openModernConnection();

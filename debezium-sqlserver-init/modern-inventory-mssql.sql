@@ -17,7 +17,16 @@ CREATE TABLE modern_customers (
                                   id INTEGER IDENTITY(2001,1) NOT NULL PRIMARY KEY,
                                   vorname VARCHAR(255) NOT NULL,
                                   nachname VARCHAR(255) NOT NULL,
-                                  email VARCHAR(255) NOT NULL UNIQUE
+                                  email VARCHAR(255) NOT NULL UNIQUE,
+                                  geburtstag DATE
+);
+
+CREATE TABLE test_modern_customers (
+                                  id INTEGER IDENTITY(2001,1) NOT NULL PRIMARY KEY,
+                                  vorname VARCHAR(255) NOT NULL,
+                                  nachname VARCHAR(255) NOT NULL,
+                                  email VARCHAR(255) NOT NULL UNIQUE,
+                                  geburtstag DATE
 );
 
 -- Create some very simple modern_orders

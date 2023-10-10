@@ -7,7 +7,8 @@ const Customer = {
         id: new TableField("id", sql.Int),
         firstName: new TableField("vorname", sql.VarChar),
         lastName: new TableField("nachname", sql.VarChar),
-        email: new TableField("email", sql.VarChar)
+        email: new TableField("email", sql.VarChar),
+        birthday: new TableField("geburtstag", sql.Date),
     }
 }
 

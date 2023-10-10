@@ -56,11 +56,11 @@ const openModernConnection = async function() {
 const openModernPostgresConnection = async function() {
     const modernDbConnection = new PgConnection();
     await modernDbConnection.open({
-        host: process.env.MODERNIZED_DB_SERVER,
+        host: process.env.MODERNIZED_POSTGRES_SERVER,
         port: 5432,
-        database: process.env.MODERNIZED_DB_DATABASE,
-        user: process.env.MODERNIZED_DB_USERNAME,
-        password: process.env.MODERNIZED_DB_PASSWORD,
+        database: process.env.MODERNIZED_POSTGRES_DATABASE,
+        user: process.env.MODERNIZED_POSTGRES_USERNAME,
+        password: process.env.MODERNIZED_POSTGRES_PASSWORD,
     });
     return modernDbConnection;
 }

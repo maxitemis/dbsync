@@ -34,6 +34,12 @@ class GeneralRepository {
         return records.recordsets[0];
     }
 
+    /**
+     *
+     * @param tableModel
+     * @param values values of the fields to be inserted, db specific
+     * @returns {Promise<*>}
+     */
     async insert(tableModel, values) {
         const request = new sql.Request(this.pool);
         const fieldNames = [];

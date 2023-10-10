@@ -36,16 +36,17 @@ CREATE TABLE legacy_customers (
                            id INTEGER IDENTITY(1001,1) NOT NULL PRIMARY KEY,
                            first_name VARCHAR(255) NOT NULL,
                            last_name VARCHAR(255) NOT NULL,
-                           email VARCHAR(255) NOT NULL UNIQUE
+                           email VARCHAR(255) NOT NULL UNIQUE,
+                           birthday DATE NOT NULL
 );
-INSERT INTO legacy_customers(first_name,last_name,email)
-VALUES ('Sally','Thomas','sally.thomas@acme.com');
-INSERT INTO legacy_customers(first_name,last_name,email)
-VALUES ('George','Bailey','gbailey@foobar.com');
-INSERT INTO legacy_customers(first_name,last_name,email)
-VALUES ('Edward','Walker','ed@walker.com');
-INSERT INTO legacy_customers(first_name,last_name,email)
-VALUES ('Anne','Kretchmar','annek@noanswer.org');
+INSERT INTO legacy_customers(first_name,last_name,email,birthday)
+VALUES ('Sally','Thomas','sally.thomas@acme.com', '1978-09-01');
+INSERT INTO legacy_customers(first_name,last_name,email,birthday)
+VALUES ('George','Bailey','gbailey@foobar.com', '2001-09-01');
+INSERT INTO legacy_customers(first_name,last_name,email,birthday)
+VALUES ('Edward','Walker','ed@walker.com', '2000-09-01');
+INSERT INTO legacy_customers(first_name,last_name,email,birthday)
+VALUES ('Anne','Kretchmar','annek@noanswer.org', '1999-09-09');
 
 -- Create some very simple legacy_orders
 CREATE TABLE legacy_orders (

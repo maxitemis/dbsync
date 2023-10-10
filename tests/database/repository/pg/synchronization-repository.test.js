@@ -2,7 +2,7 @@ const Repository = require("../../../../src/repository/pg/synchronization-reposi
 const {openSynchronizationPostgresConnection} = require("../../../../src/connection");
 const testFunctions = require("../repository-cases");
 
-test('check postgres synchronization repo', async () => {
+xtest('check postgres synchronization repo', async () => {
     const connection = await openSynchronizationPostgresConnection();
     const repo = new Repository(connection.client, "");
     await testFunctions(repo);

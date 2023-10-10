@@ -1,4 +1,4 @@
-const sql = require("mssql");
+const FieldTypes = require("../../model/field-types");
 
 class GeneralRepository {
     client
@@ -18,7 +18,6 @@ class GeneralRepository {
     }
 
     async findEntry(tableModel, values) {
-        // const request = new sql.Request(this.pool);
         const primaryKey = tableModel.fields.id.name;
         const where = [];
         const fieldValues = [];
@@ -42,7 +41,6 @@ class GeneralRepository {
     }
 
     async insert(tableModel, values) {
-        //const request = new sql.Request(this.pool);
         const fieldNames = [];
         const placeholders = [];
         const primaryKeyName = tableModel.fields['id'].name;
@@ -58,10 +56,10 @@ class GeneralRepository {
             }
 
             const value = values[field.name];
-            if (field.fieldType === sql.Date && typeof value === 'number') {
+            if (field.fieldType === FieldTypes.Date && typeof value === 'number') {
                 fieldNames.push(field.name);
                 placeholders.push(`(DATE '1970-01-01' + INTERVAL '${value} DAYS')`);
-            } else if (field.fieldType === sql.DateTime && typeof value === 'number') {
+            } else if (field.fieldType === FieldTypes.DateTime && typeof value === 'number') {
                 fieldNames.push(field.name);
                 placeholders.push(`(DATE '1970-01-01T00:00:00Z' + INTERVAL '${value / 1000} SECONDS')`);
             } else {
@@ -78,12 +76,10 @@ class GeneralRepository {
     }
 
     async update(tableModel, id, values) {
-        // const request = new sql.Request(this.pool);
         const placeholders = [];
         const fieldValues = [];
         let placeholderIndex = 1;
         let placeholderName;
-        // request.input('id', sql.Int, id);
         const primaryKeyName = tableModel.fields['id'].name;
         for (const fieldName in tableModel.fields) {
             if (!tableModel.fields.hasOwnProperty(fieldName)) {
@@ -99,9 +95,9 @@ class GeneralRepository {
 
             const value = values[field.name];
 
-            if (field.fieldType === sql.Date && typeof value === 'number') {
+            if (field.fieldType === FieldTypes.Date && typeof value === 'number') {
                 placeholders.push(`${field.name} = (DATE '1970-01-01' + INTERVAL '${value} DAYS')`);
-            } else if (field.fieldType === sql.DateTime && typeof value === 'number') {
+            } else if (field.fieldType === FieldTypes.DateTime && typeof value === 'number') {
                 placeholders.push(`${field.name} = (DATE '1970-01-01T00:00:00Z' + INTERVAL '${value / 1000} SECONDS')`);
             } else {
                 placeholderName = '$' + placeholderIndex++;
@@ -119,9 +115,7 @@ class GeneralRepository {
     }
 
     async delete(tableModel, id) {
-        // const request = new sql.Request(this.pool);
         const primaryKeyName = tableModel.fields['id'].name;
-        // request.input('id', sql.Int, id);
         const placeholderName = '$1';
         const deleteSQL = `DELETE FROM ${this.tablePrefix}${tableModel.tableName} WHERE ${primaryKeyName} = ${placeholderName}`;
         await this.client.query(deleteSQL, [id]);

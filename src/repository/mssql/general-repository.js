@@ -1,4 +1,14 @@
 const sql = require("mssql");
+const FieldTypes = require("../../model/field-types");
+
+function general2Specific(fieldType) {
+    const mapping = {};
+    mapping[FieldTypes.Int] = sql.Int;
+    mapping[FieldTypes.VarChar] = sql.VarChar;
+    mapping[FieldTypes.Date] = sql.Date;
+    mapping[FieldTypes.DateTime] = sql.DateTime;
+    return mapping[fieldType];
+}
 
 class GeneralRepository {
     pool
@@ -26,7 +36,7 @@ class GeneralRepository {
             const value = values[fieldName];
             const field = tableModel.fields[fieldName];
             where.push(`${fieldName} = @${fieldName}`)
-            request.input(fieldName, field.fieldType, value);
+            request.input(fieldName, general2Specific(field.fieldType), value);
         }
         const whereSQL = where.join(" AND ");
         const searchSQL = `SELECT * FROM ${this.tablePrefix}${tableModel.tableName} WHERE ${whereSQL} ORDER BY ${primaryKey}`;
@@ -55,18 +65,18 @@ class GeneralRepository {
             }
 
             const value = values[field.name];
-            if (field.fieldType === sql.Date && typeof value === 'number') {
+            if (field.fieldType === FieldTypes.Date && typeof value === 'number') {
                 fieldNames.push(field.name);
                 placeholders.push(`DATEADD(day, @${fieldName}, '1970-01-01')`);
                 request.input(fieldName, sql.Int, value);
-            } else if (field.fieldType === sql.DateTime && typeof value === 'number') {
+            } else if (field.fieldType === FieldTypes.DateTime && typeof value === 'number') {
                 fieldNames.push(field.name);
                 placeholders.push(`DATEADD(second, @${fieldName}, '1970-01-01T00:00:00Z')`);
                 request.input(fieldName, sql.Int, value / 1000);
             } else {
                 fieldNames.push(field.name);
                 placeholders.push(`@${fieldName}`);
-                request.input(fieldName, field.fieldType, value);
+                request.input(fieldName, general2Specific(field.fieldType), value);
             }
         }
         const fieldNamesSQL = fieldNames.join(", ");
@@ -94,15 +104,15 @@ class GeneralRepository {
             }
 
             const value = values[field.name];
-            if (field.fieldType === sql.Date && typeof value === 'number') {
+            if (field.fieldType === FieldTypes.Date && typeof value === 'number') {
                 placeholders.push(`${field.name} = DATEADD(day, @${fieldName}, '1970-01-01')`);
                 request.input(fieldName, sql.Int, value);
-            } else if (field.fieldType === sql.DateTime && typeof value === 'number') {
+            } else if (field.fieldType === FieldTypes.DateTime && typeof value === 'number') {
                 placeholders.push(`${field.name} = DATEADD(second, @${fieldName}, '1970-01-01T00:00:00Z')`);
                 request.input(fieldName, sql.Int, value / 1000);
             } else {
                 placeholders.push(`${field.name} = @${fieldName}`);
-                request.input(fieldName, field.fieldType, value);
+                request.input(fieldName, general2Specific(field.fieldType), value);
             }
         }
         const placeholdersSQL = placeholders.join(", ");

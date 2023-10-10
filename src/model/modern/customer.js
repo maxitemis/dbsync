@@ -1,15 +1,15 @@
-const sql = require("mssql");
+const FieldTypes = require("../field-types");
 const TableField = require("../table-field");
 
 const Customer = {
     tableName: "modern_customers",
     fields: {
-        id: new TableField("id", sql.Int),
-        firstName: new TableField("vorname", sql.VarChar),
-        lastName: new TableField("nachname", sql.VarChar),
-        email: new TableField("email", sql.VarChar),
-        birthday: new TableField("geburtstag", sql.Date),
-        lastlogin: new TableField("lastlogin", sql.DateTime)
+        id: new TableField("id", FieldTypes.Int),
+        firstName: new TableField("vorname", FieldTypes.VarChar),
+        lastName: new TableField("nachname", FieldTypes.VarChar),
+        email: new TableField("email", FieldTypes.VarChar),
+        birthday: new TableField("geburtstag", FieldTypes.Date),
+        lastlogin: new TableField("lastlogin", FieldTypes.DateTime)
     }
 }
 

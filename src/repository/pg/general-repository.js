@@ -60,18 +60,15 @@ class GeneralRepository {
             const value = values[field.name];
             if (field.fieldType === sql.Date && typeof value === 'number') {
                 fieldNames.push(field.name);
-                placeholders.push("DATEADD(day, $" + placeholderIndex + ", '1970-01-01')");
-                fieldValues.push(value)
+                placeholders.push(`(DATE '1970-01-01' + INTERVAL '${value} DAYS')`);
             } else if (field.fieldType === sql.DateTime && typeof value === 'number') {
                 fieldNames.push(field.name);
-                placeholders.push("DATEADD(second, $" + placeholderIndex + ", '1970-01-01T00:00:00Z')");
-                fieldValues.push(value / 1000 )
+                placeholders.push(`(DATE '1970-01-01T00:00:00Z' + INTERVAL '${value / 1000} SECONDS')`);
             } else {
                 fieldNames.push(field.name);
-                placeholders.push("$" + placeholderIndex);
+                placeholders.push("$" + placeholderIndex++);
                 fieldValues.push(value)
             }
-            placeholderIndex++;
         }
         const fieldNamesSQL = fieldNames.join(", ");
         const placeholdersSQL = placeholders.join(", ");
@@ -93,29 +90,31 @@ class GeneralRepository {
                 continue;
             }
             const field = tableModel.fields[fieldName];
+            if (!values.hasOwnProperty(field.name)) {
+                continue; // skip not provided field
+            }
             if (fieldName === 'id') {
                 continue;
             }
 
             const value = values[field.name];
-            placeholderName = '$' + placeholderIndex;
+
             if (field.fieldType === sql.Date && typeof value === 'number') {
-                placeholders.push(`${field.name} = DATEADD(day, ${placeholderName}, '1970-01-01')`);
-                fieldValues.push(value)
+                placeholders.push(`${field.name} = (DATE '1970-01-01' + INTERVAL '${value} DAYS')`);
             } else if (field.fieldType === sql.DateTime && typeof value === 'number') {
-                placeholders.push(`${field.name} = DATEADD(second, ${placeholderName}, '1970-01-01T00:00:00Z')`);
-                fieldValues.push(value / 1000)
+                placeholders.push(`${field.name} = (DATE '1970-01-01T00:00:00Z' + INTERVAL '${value / 1000} SECONDS')`);
             } else {
+                placeholderName = '$' + placeholderIndex++;
                 placeholders.push(`${field.name} = ${placeholderName}`);
                 fieldValues.push(value)
             }
-            placeholderIndex++;
         }
         fieldValues.push(id);
         placeholderName = '$' + placeholderIndex;
         const placeholdersSQL = placeholders.join(", ");
 
         const updateSQL = `UPDATE ${this.tablePrefix}${tableModel.tableName} SET ${placeholdersSQL} WHERE ${primaryKeyName} = ${placeholderName}`;
+        console.log(updateSQL);
         await this.client.query(updateSQL, fieldValues);
     }
 

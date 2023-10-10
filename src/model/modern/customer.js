@@ -9,6 +9,7 @@ const Customer = {
         lastName: new TableField("nachname", sql.VarChar),
         email: new TableField("email", sql.VarChar),
         birthday: new TableField("geburtstag", sql.Date),
+        lastlogin: new TableField("lastlogin", sql.DateTime)
     }
 }
 

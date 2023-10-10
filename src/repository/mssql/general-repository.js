@@ -86,6 +86,9 @@ class GeneralRepository {
                 continue;
             }
             const field = tableModel.fields[fieldName];
+            if (!values.hasOwnProperty(field.name)) {
+                continue; // skip not provided field
+            }
             if (fieldName === 'id') {
                 continue;
             }

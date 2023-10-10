@@ -37,7 +37,8 @@ CREATE TABLE legacy_customers (
                            first_name VARCHAR(255) NOT NULL,
                            last_name VARCHAR(255) NOT NULL,
                            email VARCHAR(255) NOT NULL UNIQUE,
-                           birthday DATE NOT NULL
+                           birthday DATE,
+                           lastlogin DATETIME
 );
 INSERT INTO legacy_customers(first_name,last_name,email,birthday)
 VALUES ('Sally','Thomas','sally.thomas@acme.com', '1978-09-01');

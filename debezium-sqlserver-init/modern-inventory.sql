@@ -17,7 +17,8 @@ CREATE TABLE modern_customers (
                                   vorname VARCHAR(255) NOT NULL,
                                   nachname VARCHAR(255) NOT NULL,
                                   email VARCHAR(255) NOT NULL UNIQUE,
-                                  geburtstag DATE
+                                  geburtstag DATE,
+                                  lastlogin TIMESTAMP
 );
 
 CREATE TABLE test_modern_customers (
@@ -25,7 +26,8 @@ CREATE TABLE test_modern_customers (
                                   vorname VARCHAR(255) NOT NULL,
                                   nachname VARCHAR(255) NOT NULL,
                                   email VARCHAR(255) NOT NULL UNIQUE,
-                                  geburtstag DATE
+                                  geburtstag DATE,
+                                  lastlogin TIMESTAMP
 );
 
 -- Create some very simple modern_orders

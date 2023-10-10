@@ -94,7 +94,9 @@ cat debezium-sqlserver-init/legacy-inventory-cdc.sql | docker-compose exec -T sq
 cat debezium-sqlserver-init/modern-inventory-cdc.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
 
 curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ -d @register-sqlserver.json
-curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ -d @register-sqlserver-new.json
+curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ -d @register-sqlserver-modern.json
+
+curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ -d @register-postgres-modern.json
 
 curl -i -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/
 
@@ -129,7 +131,25 @@ curl -i -X DELETE -H "Accept:application/json" -H  "Content-Type:application/jso
 
 ````
 
+### Read topics
 
+# Consume messages from a Debezium topic
+
+```
+docker-compose exec kafka /kafka/bin/kafka-console-consumer.sh \
+--bootstrap-server kafka:9092 \
+--from-beginning \
+--property print.key=true \
+--topic server2.public.modern_changes
+```
+
+````
+docker-compose exec kafka /kafka/bin/kafka-console-consumer.sh \
+    --bootstrap-server kafka:9092 \
+    --from-beginning \
+    --property print.key=true \
+    --topic server1.legacyDB.dbo.legacy_changes
+````
 
 ### Links
 

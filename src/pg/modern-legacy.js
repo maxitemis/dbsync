@@ -1,12 +1,12 @@
 const dotenv = require('dotenv')
 const {Kafka} = require("kafkajs");
-const SynchronizationRepository = require("./repository/pg/synchronization-repository");
+const SynchronizationRepository = require("../repository/pg/synchronization-repository");
 
-const GeneralRepository = require("./repository/mssql/general-repository");
+const GeneralRepository = require("../repository/mssql/general-repository");
 
-const calculateHash = require("./helpers/hash-calculator");
-const synchronisation = require("./model/synchronisation");
-const {openLegacyConnection, openModernConnection, tablePrefix, openSynchronizationPostgresConnection} = require("./connection");
+const calculateHash = require("../helpers/hash-calculator");
+const synchronisation = require("../model/synchronisation");
+const {openLegacyConnection, tablePrefix, openSynchronizationPostgresConnection} = require("../connection");
 dotenv.config();
 
 const synchronizationByModernName = synchronisation.getTablesByModernName(tablePrefix);
@@ -134,14 +134,13 @@ class DualConsumer {
         console.log("application id", clientId);
 
         this.legacyConnection = await openLegacyConnection();
-        this.modernConnection = await openModernConnection();
         this.syncConnection = await openSynchronizationPostgresConnection();
 
         // the client ID lets kafka know who's producing the messages
 
         const brokers = [process.env.KAFKA_BROKERS];
         //const legacyTopic =  process.env.LEGACY_TOPIC_NAME;
-        const modernTopic =  process.env.MODERNIZED_TOPIC_NAME;
+        const modernTopic =  process.env.MODERNIZED_POSTGRES_TOPIC_NAME;
         const kafka = new Kafka({ clientId, brokers });
 
         this.consumerLegacy = kafka.consumer({ groupId: clientId });
@@ -149,7 +148,6 @@ class DualConsumer {
         this.synchronizationRepository = new SynchronizationRepository(this.syncConnection.client, tablePrefix);
 
         this.legacyRepository = new GeneralRepository(this.legacyConnection.pool, tablePrefix);
-        //this.modernRepository = new GeneralRepository(this.modernConnection.pool, tablePrefix);
 
         await this.consumerLegacy.connect()
         // await this.consumerLegacy.subscribe({ topic: legacyTopic })
@@ -186,7 +184,6 @@ class DualConsumer {
     async stop() {
         await this.consumerLegacy.disconnect();
         await this.legacyConnection.close();
-        await this.modernConnection.close();
         await this.syncConnection.close();
     }
 

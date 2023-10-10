@@ -38,11 +38,12 @@ services:
       - STATUS_STORAGE_TOPIC=my_connect_statuses
 
   postgres:
-    image: postgres
+    image: quay.io/debezium/example-postgres:${DEBEZIUM_VERSION}
     ports:
       - 5432:5432
     environment:
-      POSTGRES_PASSWORD: example
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_USER=postgres
 
   adminer:
     image: adminer

@@ -1,12 +1,12 @@
 const dotenv = require('dotenv')
 const {Kafka} = require("kafkajs");
-const SynchronizationRepository = require("./repository/pg/synchronization-repository");
+const SynchronizationRepository = require("../repository/pg/synchronization-repository");
 
-const GeneralRepository = require("./repository/mssql/general-repository");
+const GeneralRepository = require("../repository/pg/general-repository");
 
-const calculateHash = require("./helpers/hash-calculator");
-const synchronisation = require("./model/synchronisation");
-const {openLegacyConnection, openModernConnection, tablePrefix, openSynchronizationPostgresConnection} = require("./connection");
+const calculateHash = require("../helpers/hash-calculator");
+const synchronisation = require("../model/synchronisation");
+const {openModernPostgresConnection, tablePrefix, openSynchronizationPostgresConnection} = require("../connection");
 dotenv.config();
 
 const synchronizationByLegacyName = synchronisation.getTablesByLegacyName(tablePrefix);
@@ -136,8 +136,7 @@ class DualConsumer {
         const clientId = process.env.LEGACY_APP_NAME;
         console.log("application id", clientId);
 
-        this.legacyConnection = await openLegacyConnection();
-        this.modernConnection = await openModernConnection();
+        this.modernConnection = await openModernPostgresConnection();
         this.syncConnection = await openSynchronizationPostgresConnection();
 
         // the client ID lets kafka know who's producing the messages
@@ -151,7 +150,7 @@ class DualConsumer {
 
         this.synchronizationRepository = new SynchronizationRepository(this.syncConnection.client, tablePrefix);
 
-        this.modernRepository = new GeneralRepository(this.modernConnection.pool, tablePrefix);
+        this.modernRepository = new GeneralRepository(this.modernConnection.client, tablePrefix);
 
         await this.consumerLegacy.connect()
         await this.consumerLegacy.subscribe({ topic: legacyTopic })
@@ -187,7 +186,6 @@ class DualConsumer {
 
     async stop() {
         await this.consumerLegacy.disconnect();
-        await this.legacyConnection.close();
         await this.modernConnection.close();
         await this.syncConnection.close();
     }

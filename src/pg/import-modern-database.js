@@ -1,7 +1,8 @@
-const GeneralRepository = require("./repository/mssql/general-repository");
-const SynchronizationRepository = require("./repository/pg/synchronization-repository");
-const calculateHash = require("./helpers/hash-calculator");
-const synchronization = require("./model/synchronisation");
+const GeneralRepository = require("../repository/mssql/general-repository");
+const GeneralPgRepository = require("../repository/pg/general-repository");
+const SynchronizationRepository = require("../repository/pg/synchronization-repository");
+const calculateHash = require("../helpers/hash-calculator");
+const synchronization = require("../model/synchronisation");
 
 async function getModernKeyByLegacy(legacyKey, objectName, synchronizationRepository) {
     const mapping = await synchronizationRepository.getByLegacyId(legacyKey, objectName);
@@ -62,7 +63,7 @@ function calculateHashForModernRecord(insertedID, modernModel, modernValues) {
 const importModernDatabase = async function (legacyConnection, modernConnection, syncDbConnection, tablePrefix) {
 
     const legacyRepository = new GeneralRepository(legacyConnection.pool, tablePrefix);
-    const modernRepository = new GeneralRepository(modernConnection.pool, tablePrefix);
+    const modernRepository = new GeneralPgRepository(modernConnection.client, tablePrefix);
 
     const synchronizationRepository = new SynchronizationRepository(syncDbConnection.client, tablePrefix);
 

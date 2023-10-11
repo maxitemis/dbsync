@@ -6,7 +6,7 @@ const GeneralRepository = require("./repository/mssql/general-repository");
 
 const calculateHash = require("./helpers/hash-calculator");
 const synchronisation = require("./model/synchronisation");
-const {openLegacyConnection, openModernConnection, tablePrefix} = require("./connection");
+const {openLegacyConnection, openSynchronizationMSSQLConnection,  tablePrefix} = require("./connection");
 dotenv.config();
 
 const synchronizationByModernName = synchronisation.getTablesByModernName(tablePrefix);
@@ -134,7 +134,7 @@ class DualConsumer {
         console.log("application id", clientId);
 
         this.legacyConnection = await openLegacyConnection();
-        this.modernConnection = await openModernConnection();
+        this.syncConnection = await openSynchronizationMSSQLConnection();
 
         // the client ID lets kafka know who's producing the messages
 
@@ -145,11 +145,10 @@ class DualConsumer {
 
         this.consumerLegacy = kafka.consumer({ groupId: clientId });
 
-        this.synchronizationRepository = new SynchronizationRepository(this.modernConnection.pool, tablePrefix);
+        this.synchronizationRepository = new SynchronizationRepository(this.syncConnection.pool, tablePrefix);
         await this.synchronizationRepository.prepareStatements();
 
         this.legacyRepository = new GeneralRepository(this.legacyConnection.pool, tablePrefix);
-        //this.modernRepository = new GeneralRepository(this.modernConnection.pool, tablePrefix);
 
         await this.consumerLegacy.connect()
         // await this.consumerLegacy.subscribe({ topic: legacyTopic })
@@ -188,7 +187,7 @@ class DualConsumer {
         await this.synchronizationRepository.unprepareStatements();
 
         await this.legacyConnection.close();
-        await this.modernConnection.close();
+        await this.syncConnection.close();
     }
 
     async insertSynchronizationLock(afterElement, modernID, legacyHash, modernHash, objectName) {

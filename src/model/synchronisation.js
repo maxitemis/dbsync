@@ -15,7 +15,12 @@ const synchronization = {
     tables:  [
         new SynchronisationEntry('customers', legacyCustomerModel, modernCustomerModel),
         new SynchronisationEntry('products', legacyProductModel, modernProductModel),
-        new SynchronisationEntry('orders', legacyOrderModel, modernOrderModel, { purchaser: 'customers', productId: 'products' }),
+        new SynchronisationEntry(
+            'orders',
+            legacyOrderModel,
+            modernOrderModel,
+            { purchaser: 'customers', productId: 'products' }
+        ),
     ],
 
     getTablesByName: () => {

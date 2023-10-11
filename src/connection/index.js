@@ -53,6 +53,29 @@ const openModernConnection = async function() {
     return legacyDbConnection;
 }
 
+const openSynchronizationMSSQLConnection = async function() {
+    console.log("connecting to", process.env.SYNC_MSSQL_SERVER)
+    const legacyDbConnection = new DbConnection();
+    await legacyDbConnection.open({
+        user: process.env.SYNC_MSSQL_USERNAME,
+        password: process.env.SYNC_MSSQL_PASSWORD,
+        server: process.env.SYNC_MSSQL_SERVER,
+        database: process.env.SYNC_MSSQL_DATABASE,
+        trustServerCertificate: true,
+        requestTimeout: timeout,
+        pool: {
+            max: 1000, min: 5,
+            idleTimeoutMillis: timeout,
+            acquireTimeoutMillis: timeout,
+            createTimeoutMillis: timeout,
+            destroyTimeoutMillis: timeout,
+            reapIntervalMillis: timeout,
+            createRetryIntervalMillis: timeout,
+        }
+    });
+    return legacyDbConnection;
+}
+
 const openModernPostgresConnection = async function() {
     const modernDbConnection = new PgConnection();
     await modernDbConnection.open({
@@ -82,6 +105,7 @@ const openSynchronizationPostgresConnection = async function() {
 module.exports = {
     openModernConnection,
     openLegacyConnection,
+    openSynchronizationMSSQLConnection,
     tablePrefix,
     openModernPostgresConnection,
     openSynchronizationPostgresConnection

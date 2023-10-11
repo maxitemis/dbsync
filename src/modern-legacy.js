@@ -1,17 +1,22 @@
 const dotenv = require('dotenv')
 const {Kafka} = require("kafkajs");
-const SynchronizationRepository = require("./repository/mssql/synchronization-repository");
-
-const GeneralRepository = require("./repository/mssql/general-repository");
 
 const calculateHash = require("./helpers/hash-calculator");
 const synchronisation = require("./model/synchronisation");
-const {openLegacyConnection, openSynchronizationMSSQLConnection,  tablePrefix} = require("./connection");
+const {tablePrefix} = require("./connection");
 dotenv.config();
 
 const synchronizationByModernName = synchronisation.getTablesByModernName(tablePrefix);
 
 class DualConsumer {
+
+    constructor(synchronizationRepository, legacyRepository, topicName) {
+        this.synchronizationRepository = synchronizationRepository;
+        this.legacyRepository = legacyRepository;
+        this.topicName = topicName;
+    }
+
+
     async handleModernRecordUpdate(parsed) {
         if (!synchronizationByModernName.hasOwnProperty(parsed.payload.source.table)) {
             console.log(`table ${parsed.payload.source.table} is not configured for this event`);
@@ -133,22 +138,18 @@ class DualConsumer {
         const clientId = process.env.MODERN_APP_NAME;
         console.log("application id", clientId);
 
-        this.legacyConnection = await openLegacyConnection();
-        this.syncConnection = await openSynchronizationMSSQLConnection();
+
 
         // the client ID lets kafka know who's producing the messages
 
         const brokers = [process.env.KAFKA_BROKERS];
         //const legacyTopic =  process.env.LEGACY_TOPIC_NAME;
-        const modernTopic =  process.env.MODERNIZED_TOPIC_NAME;
+        const modernTopic =  this.topicName;
         const kafka = new Kafka({ clientId, brokers });
 
         this.consumerLegacy = kafka.consumer({ groupId: clientId });
 
-        this.synchronizationRepository = new SynchronizationRepository(this.syncConnection.pool, tablePrefix);
-        await this.synchronizationRepository.prepareStatements();
 
-        this.legacyRepository = new GeneralRepository(this.legacyConnection.pool, tablePrefix);
 
         await this.consumerLegacy.connect()
         // await this.consumerLegacy.subscribe({ topic: legacyTopic })
@@ -184,10 +185,6 @@ class DualConsumer {
 
     async stop() {
         await this.consumerLegacy.disconnect();
-        await this.synchronizationRepository.unprepareStatements();
-
-        await this.legacyConnection.close();
-        await this.syncConnection.close();
     }
 
     async insertSynchronizationLock(afterElement, modernID, legacyHash, modernHash, objectName) {

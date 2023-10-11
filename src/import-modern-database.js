@@ -1,5 +1,3 @@
-const GeneralRepository = require("./repository/mssql/general-repository");
-const SynchronizationRepository = require("./repository/mssql/synchronization-repository");
 const calculateHash = require("./helpers/hash-calculator");
 const synchronization = require("./model/synchronisation");
 
@@ -59,13 +57,7 @@ function calculateHashForModernRecord(insertedID, modernModel, modernValues) {
     return calculateHash(records);
 }
 
-const importModernDatabase = async function (legacyConnection, modernConnection, tablePrefix) {
-
-    const legacyRepository = new GeneralRepository(legacyConnection.pool, tablePrefix);
-    const modernRepository = new GeneralRepository(modernConnection.pool, tablePrefix);
-
-    const synchronizationRepository = new SynchronizationRepository(modernConnection.pool, tablePrefix);
-    await synchronizationRepository.prepareStatements();
+const importModernDatabase = async function (legacyRepository, modernRepository, synchronizationRepository) {
 
     for (const table of synchronization.tables) {
         console.log(table.name);
@@ -91,8 +83,6 @@ const importModernDatabase = async function (legacyConnection, modernConnection,
         }
 
     }
-
-    await synchronizationRepository.unprepareStatements();
 }
 
 module.exports = importModernDatabase;

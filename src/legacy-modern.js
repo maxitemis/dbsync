@@ -1,17 +1,19 @@
 const dotenv = require('dotenv')
 const {Kafka} = require("kafkajs");
-const SynchronizationRepository = require("./repository/mssql/synchronization-repository");
-
-const GeneralRepository = require("./repository/mssql/general-repository");
-
 const calculateHash = require("./helpers/hash-calculator");
 const synchronisation = require("./model/synchronisation");
-const {openModernConnection, openSynchronizationMSSQLConnection, tablePrefix} = require("./connection");
+const { tablePrefix } = require("./connection");
 dotenv.config();
 
 const synchronizationByLegacyName = synchronisation.getTablesByLegacyName(tablePrefix);
 
 class DualConsumer {
+
+    constructor(synchronizationRepository, modernRepository) {
+        this.synchronizationRepository = synchronizationRepository
+        this.modernRepository = modernRepository
+    }
+
     async handleLegacyRecordUpdate(parsed) {
         if (!synchronizationByLegacyName.hasOwnProperty(parsed.payload.source.table)) {
             console.log(`table ${parsed.payload.source.table} is not configured for this event`);
@@ -136,8 +138,7 @@ class DualConsumer {
         const clientId = process.env.LEGACY_APP_NAME;
         console.log("application id", clientId);
 
-        this.modernConnection = await openModernConnection();
-        this.syncConnection = await openSynchronizationMSSQLConnection();
+
 
         // the client ID lets kafka know who's producing the messages
 
@@ -148,10 +149,7 @@ class DualConsumer {
 
         this.consumerLegacy = kafka.consumer({ groupId: clientId });
 
-        this.synchronizationRepository = new SynchronizationRepository(this.syncConnection.pool, tablePrefix);
-        await this.synchronizationRepository.prepareStatements();
 
-        this.modernRepository = new GeneralRepository(this.modernConnection.pool, tablePrefix);
 
         await this.consumerLegacy.connect()
         await this.consumerLegacy.subscribe({ topic: legacyTopic })
@@ -187,10 +185,6 @@ class DualConsumer {
 
     async stop() {
         await this.consumerLegacy.disconnect();
-        await this.synchronizationRepository.unprepareStatements();
-
-        await this.modernConnection.close();
-        await this.syncConnection.close();
     }
 
     async insertSynchronizationLock(afterElement, modernID, legacyHash, modernHash, objectName) {

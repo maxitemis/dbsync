@@ -130,7 +130,7 @@ class DualConsumer {
     }
 
     async start () {
-        const clientId = process.env.APP_NAME;
+        const clientId = process.env.MODERN_APP_NAME;
         console.log("application id", clientId);
 
         this.legacyConnection = await openLegacyConnection();

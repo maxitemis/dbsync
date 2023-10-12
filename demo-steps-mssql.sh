@@ -8,57 +8,72 @@ SCREEN2="modern-legacy"
 # screen -S legacy-modern
 # screen -S modern-legacy
 
-echo "INFO: running containers:"
+echo "INFO: docker-compose up:"
 
 screen -S $SCREEN0 -X stuff "docker-compose up"
 screen -S $SCREEN0 -X eval "stuff \015"
 
-read -p "INFO: step 1"
+echo "\nsehe in anderen Terminal...\n"
 
-echo "INFO: running containers:"
+sleep 3
+
+echo "INFO: Laufende Container:"
 
 docker ps --format "table {{.Names}}"
 
-read -p "INFO: creating legacy datenbank"
+read -p "INFO: Klick auf eine Taste, um einer Legacy-Datenbank zu erstellen."
 
 cat debezium-sqlserver-init/legacy-inventory.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
 
-read -p "INFO: creating modern datenbank"
+read -p "INFO: Klick auf eine Taste, um einer modernen Datenbank zu erstellen"
 
 cat debezium-sqlserver-init/modern-inventory-mssql.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
 
-read -p "INFO: creating synchronization database"
+read -p "INFO: Klick auf eine Taste, um einer Synchronisationsdatenbank zu erstellen"
 
 cat debezium-sqlserver-init/synchronization-mssql.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
 
-read -p "INFO: initial synchronization"
+read -p "INFO: Klick auf eine Taste, um Erstsynchronisation durchzuführen"
 
 docker-compose exec node node full-synchronization.js
 
-read -p "INFO: activate CDC"
+read -p "INFO: Klick auf eine Taste, um CDC zu aktivieren"
 
+echo "\n"
 cat debezium-sqlserver-init/legacy-inventory-cdc.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
+
+echo "\n"
 cat debezium-sqlserver-init/modern-inventory-cdc.sql | docker-compose exec -T sqlserver bash -c '/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD'
 
-read -p "INFO: activate kafka connectors"
+echo "\n"
 
+read -p "INFO: Klick auf eine Taste, um Kafka-Konnektoren zu aktivieren"
+
+echo "\n"
 curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ -d @register-sqlserver.json
+
+echo "\n"
 curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ -d @register-sqlserver-modern.json
 
-read -p "INFO: start one direction synchronization"
+echo "\n"
+
+read -p "INFO: Klick auf eine Taste, um die Synchronisierung in Legacy-Modern Richtung zu starten"
+
+echo "\n"
 
 screen -S $SCREEN1 -X stuff "docker-compose exec node node legacy-modern-consumer.js"
 screen -S $SCREEN1 -X eval "stuff \015"
 
-read -p "INFO: start back synchronization"
+echo "\nsehe in anderen Terminal...\n"
 
-
+read -p "INFO: Klick auf eine Taste, um die Synchronisierung in Modern-Legacy Richtung zu starten"
 
 screen -S $SCREEN2 -X stuff "docker-compose exec node node modern-legacy-consumer.js"
 screen -S $SCREEN2 -X eval "stuff \015"
 
+echo "\nsehe in anderen Terminal...\n"
 
-read -p "INFO: stopping containers"
+read -p "INFO: Klick auf eine Taste, um Containers zu stoppen"
 
 
 screen -S $SCREEN0 -X eval "stuff ^C"
@@ -66,8 +81,9 @@ screen -S $SCREEN0 -X eval "stuff ^C"
 screen -S $SCREEN0 -X stuff "docker-compose down"
 screen -S $SCREEN0 -X eval "stuff \015"
 
+echo "\nsehe in anderen Terminal...\n"
 
-read -p "INFO: thanks for watching!"
+read -p "INFO: Danke fürs zuschauen!"
 
 
 

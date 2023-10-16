@@ -161,3 +161,7 @@ docker-compose exec kafka /kafka/bin/kafka-console-consumer.sh \
 - [Node MS SQL Documentation](https://tediousjs.github.io/node-mssql/#prepared-statement)
 
 
+## License
+
+[MIT](license)
+

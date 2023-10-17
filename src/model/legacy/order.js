@@ -2,13 +2,13 @@ const FieldTypes = require("../field-types");
 const TableField = require("../table-field");
 
 const Order = {
-    tableName: "legacy_orders",
+    tableName: "legacy_bestellungen",
     fields: {
         id: new TableField("id", FieldTypes.Int),
-        orderDate: new TableField("order_date", FieldTypes.Date),
-        purchaser: new TableField("purchaser", FieldTypes.Int),
+        orderDate: new TableField("bestellung_datum", FieldTypes.Date),
+        purchaser: new TableField("kunde_id", FieldTypes.Int),
         quantity: new TableField("quantity", FieldTypes.Int),
-        productId: new TableField("product_id", FieldTypes.Int)
+        productId: new TableField("produkt_id", FieldTypes.Int)
     }
 }
 

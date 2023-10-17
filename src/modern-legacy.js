@@ -33,7 +33,7 @@ class DualConsumer {
 
             console.log('modern hashes: ', newModernHash, mapping.modern_hash)
             if (newModernHash === mapping.modern_hash) {
-                console.log('records hash is the same for modern record, no changes are needed')
+                console.log('records hash is the same for modern record: no changes are needed')
                 return;
             }
 

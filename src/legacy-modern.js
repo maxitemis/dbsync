@@ -31,7 +31,7 @@ class DualConsumer {
             console.log('legacy hashes: ', newLegacyHash, mapping.legacy_hash)
             if (newLegacyHash === mapping.legacy_hash) {
                 // records are the same no need to update
-                console.log('only records hash is the same for legacy record, no changes are needed')
+                console.log('records hash is the same for legacy record: no changes are needed')
                 return;
             }
 

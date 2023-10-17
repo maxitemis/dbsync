@@ -2,12 +2,12 @@ const FieldTypes = require("../field-types");
 const TableField = require("../table-field");
 
 const Product = {
-    tableName: "legacy_products",
+    tableName: "legacy_produkte",
     fields: {
         id: new TableField("id", FieldTypes.Int),
         name: new TableField("name", FieldTypes.VarChar),
-        description:new TableField("description", FieldTypes.VarChar),
-        weight: new TableField("weight", FieldTypes.Int)
+        description:new TableField("beschreibung", FieldTypes.VarChar),
+        weight: new TableField("gewicht", FieldTypes.Int)
     }
 }
 

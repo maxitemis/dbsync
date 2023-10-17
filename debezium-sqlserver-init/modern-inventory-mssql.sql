@@ -15,19 +15,19 @@ CREATE TABLE modern_products (
 -- Create some modern_customers ...
 CREATE TABLE modern_customers (
                                   id INTEGER IDENTITY(2001,1) NOT NULL PRIMARY KEY,
-                                  vorname VARCHAR(255) NOT NULL,
-                                  nachname VARCHAR(255) NOT NULL,
+                                  first_name VARCHAR(255) NOT NULL,
+                                  last_name VARCHAR(255) NOT NULL,
                                   email VARCHAR(255) NOT NULL UNIQUE,
-                                  geburtstag DATE,
+                                  birthday DATE,
                                   lastlogin DATETIME
 );
 
 CREATE TABLE test_modern_customers (
                                   id INTEGER IDENTITY(2001,1) NOT NULL PRIMARY KEY,
-                                  vorname VARCHAR(255) NOT NULL,
-                                  nachname VARCHAR(255) NOT NULL,
+                                  first_name VARCHAR(255) NOT NULL,
+                                  last_name VARCHAR(255) NOT NULL,
                                   email VARCHAR(255) NOT NULL UNIQUE,
-                                  geburtstag DATE,
+                                  birthday DATE,
                                   lastlogin DATETIME
 );
 

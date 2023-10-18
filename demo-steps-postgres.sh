@@ -1,12 +1,15 @@
 #!/bin/sh
 
+# before running the demo setup three windows and run there following commands:
+# screen -S docker-compose
+# screen -S legacy-modern
+# screen -S modern-legacy
+
 SCREEN0="docker-compose"
 SCREEN1="legacy-modern"
 SCREEN2="modern-legacy"
 
-# screen -S docker-compose
-# screen -S legacy-modern
-# screen -S modern-legacy
+read -p "INFO: Klick auf eine Taste, zu anfangen..."
 
 echo "INFO: docker-compose up:"
 
